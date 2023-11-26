@@ -1,0 +1,18 @@
+# Attention! You must change the following variables to work!
+/# Change the following variable to the directory of your shared drive
+#/
+SET SharedFolder TO $'''C:\\Users\\Your_User_name\\OneDrive\\Your_Folder'''
+/# Change the following variable to the directory of where you want to organize your files
+#/
+SET MasterFolder TO $'''C:\\Users\\Your_User\\Desktop\\Master Folder'''
+Folder.GetFiles Folder: SharedFolder FileFilter: $'''*''' IncludeSubfolders: False FailOnAccessDenied: True SortBy1: Folder.SortBy.NoSort SortDescending1: False SortBy2: Folder.SortBy.NoSort SortDescending2: False SortBy3: Folder.SortBy.NoSort SortDescending3: False Files=> Files
+LOOP FOREACH CurrentItem IN Files
+    Text.ConvertDateTimeToText.FromCustomDateTime DateTime: CurrentItem.CreationTime CustomFormat: $'''yyyy-MM-dd''' Result=> DateString
+    SET FolderLocation TO $'''%MasterFolder%\\%DateString%'''
+    IF (Folder.IfFolderExists.DoesNotExist Path: FolderLocation) THEN
+        Folder.Create FolderPath: MasterFolder FolderName: DateString
+        File.Move Files: CurrentItem Destination: FolderLocation IfFileExists: File.IfExists.DoNothing
+    ELSE
+        File.Move Files: CurrentItem Destination: FolderLocation IfFileExists: File.IfExists.DoNothing
+    END
+END
